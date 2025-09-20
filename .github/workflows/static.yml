@@ -36,6 +36,7 @@ jobs:
       - name: Clone Zenoh repository
         run: |
           git clone https://github.com/eclipse-zenoh/zenoh.git zenoh-repo
+          git checkout doc_rewrite
           cd zenoh-repo
           echo "Cloned Zenoh repository at commit: $(git rev-parse HEAD)"
 
@@ -63,7 +64,7 @@ jobs:
         run: |
           cd zenoh-repo
           # Generate documentation for all packages
-          cargo doc --workspace --no-deps --document-private-items
+          cargo doc --workspace --no-deps --document-private-items --all-features
           
           # Create an index.html that redirects to the main zenoh documentation
           cat > target/doc/index.html << 'EOF'
