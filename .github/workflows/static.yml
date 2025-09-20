@@ -36,8 +36,8 @@ jobs:
       - name: Clone Zenoh repository
         run: |
           git clone https://github.com/eclipse-zenoh/zenoh.git zenoh-repo
-          git checkout doc_rewrite
           cd zenoh-repo
+          git checkout doc_rewrite
           echo "Cloned Zenoh repository at commit: $(git rev-parse HEAD)"
 
       - name: Setup Rust
