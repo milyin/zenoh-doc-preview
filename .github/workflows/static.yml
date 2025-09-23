@@ -64,7 +64,7 @@ jobs:
         run: |
           cd zenoh-repo
           # Generate documentation for all packages
-          cargo doc --workspace --no-deps --document-private-items --all-features
+          cargo doc --workspace --no-deps --all-features
           
           # Create an index.html that redirects to the main zenoh documentation
           cat > target/doc/index.html << 'EOF'
