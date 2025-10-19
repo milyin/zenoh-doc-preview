@@ -43,6 +43,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install zenoh package
+        run: |
+          cd zenoh-python-repo
+          pip install -e .
+
       - name: Patch requirements.txt for Sphinx version
         run: |
           sed -i.bak 's/sphinx==7.2.6/sphinx==7.1.2/' zenoh-python-repo/docs/requirements.txt
