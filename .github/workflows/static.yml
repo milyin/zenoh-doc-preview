@@ -33,53 +33,35 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone Zenoh repository
+      - name: Clone zenoh-python repository (doc_update2 branch)
         run: |
-          git clone https://github.com/eclipse-zenoh/zenoh.git zenoh-repo
-          cd zenoh-repo
-          git checkout doc_rewrite
-          echo "Cloned Zenoh repository at commit: $(git rev-parse HEAD)"
+          git clone --branch doc_update2 https://github.com/eclipse-zenoh/zenoh-python.git zenoh-python-repo
+          echo "Cloned zenoh-python repository at commit: $(cd zenoh-python-repo && git rev-parse HEAD)"
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+          python-version: '3.8'
 
-      - name: Cache Rust dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            zenoh-repo/target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('zenoh-repo/**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      - name: Build Zenoh documentation
+      - name: Install documentation dependencies
         run: |
-          cd zenoh-repo
-          # Generate documentation for all packages
-          cargo doc --workspace --no-deps --all-features
-          
-          # Create an index.html that redirects to the main zenoh documentation
-          cat > target/doc/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Zenoh Documentation</title>
-            <meta http-equiv="refresh" content="0; url=zenoh/index.html">
-          </head>
-          <body>
-            <p>Redirecting to <a href="zenoh/index.html">Zenoh documentation</a>...</p>
-          </body>
-          </html>
-          EOF
+          cd zenoh-python-repo/docs
+          pip install -r requirements.txt
+
+      - name: Build Python documentation
+        run: |
+          cd zenoh-python-repo/docs
+          python3 stubs_to_sources.py
+          make html
+          python3 stubs_to_sources.py --recover
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'zenoh-python-repo/docs/_build/html'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
